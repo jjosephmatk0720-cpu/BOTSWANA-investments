@@ -3,53 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Jubilee Fortunes</title>
+    <title>Investor Profile | Jubilee Fortunes</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background: #f8fafc; font-family: sans-serif; }
-        .glass-wallet { background: #0f172a; border-radius: 2.5rem; color: white; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-    </style>
 </head>
-<body class="p-4 md:p-8">
-
+<body class="bg-slate-50 p-4 md:p-8">
     <div class="max-w-7xl mx-auto">
-        <header class="flex justify-between items-center mb-8 px-2">
-            <h1 class="text-xl font-black italic uppercase tracking-tighter">Jubilee<span class="text-amber-500">Fortunes</span></h1>
-            <button onclick="logout()" class="text-[9px] font-black uppercase bg-slate-200 px-6 py-2 rounded-full">Logout</button>
+        <header class="flex justify-between items-center mb-10">
+            <h1 class="text-xl font-black italic uppercase italic">Jubilee<span class="text-amber-500">Fortunes</span></h1>
+            <button onclick="logout()" class="text-[10px] font-black uppercase bg-white border px-6 py-2 rounded-full">Sign Out</button>
         </header>
 
-        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div class="lg:col-span-4 space-y-6">
-                <div class="glass-wallet p-8 md:p-10 relative overflow-hidden">
-                    <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-2">Portfolio Balance</p>
-                    <h2 id="balance" class="text-4xl md:text-5xl font-black italic mb-10">P0.00</h2>
-                    <div class="grid grid-cols-2 gap-4 relative z-10">
-                        <a href="deposit.html" class="bg-amber-500 text-slate-900 py-4 rounded-2xl text-center font-black uppercase text-[10px]">Deposit</a>
-                        <a href="withdraw.html" class="bg-white/10 text-white py-4 rounded-2xl text-center font-black uppercase text-[10px]">Withdraw</a>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-[2rem] border flex justify-between items-center shadow-sm">
-                    <div>
-                        <p class="text-[8px] font-black uppercase text-slate-400">Current Plan</p>
-                        <p id="plan-name" class="font-black text-slate-900 uppercase italic">None</p>
-                    </div>
-                    <a href="plans.html" class="bg-amber-50 p-3 rounded-xl text-amber-600">⚡</a>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1 bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl">
+                <p class="text-[10px] font-black uppercase text-slate-400 mb-2">Available Balance</p>
+                <h2 id="balance" class="text-4xl font-black italic mb-8">P0.00</h2>
+                <div class="flex gap-3">
+                    <a href="deposit.html" class="flex-1 bg-amber-500 text-slate-900 py-4 rounded-2xl text-center font-black uppercase text-[10px]">Deposit</a>
+                    <a href="withdraw.html" class="flex-1 bg-white/10 py-4 rounded-2xl text-center font-black uppercase text-[10px]">Withdraw</a>
                 </div>
             </div>
 
-            <div class="lg:col-span-8">
-                <div class="bg-white rounded-[2.5rem] border overflow-hidden shadow-sm">
-                    <div class="p-6 border-b bg-slate-50">
-                        <h3 class="font-black uppercase text-xs tracking-widest">Growth History</h3>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <tbody id="history-rows" class="text-xs font-bold text-slate-700"></tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="lg:col-span-2 bg-white rounded-[2.5rem] border p-8">
+                <h3 class="font-black uppercase text-xs mb-6">Transaction Activity</h3>
+                <div id="history" class="space-y-4"></div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script type="module">
@@ -57,37 +35,33 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBmZC9gaj68vd-tWHqgf9H0pYZBvVHhnPE", 
-            authDomain: "remoteworkingacess.firebaseapp.com", 
-            projectId: "remoteworkingacess", 
-            storageBucket: "remoteworkingacess.firebasestorage.app", 
-            messagingSenderId: "953179052891", 
-            appId: "1:953179052891:web:2ed40335272e7131f4987e" 
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtvz0p0ID5HnB8DVdpWVJ4mCqYM_7M8n0",
+            authDomain: "botswana-c92b4.firebaseapp.com",
+            projectId: "botswana-c92b4",
+            storageBucket: "botswana-c92b4.firebasestorage.app",
+            messagingSenderId: "644341145732",
+            appId: "1:644341145732:web:653352d30c8ff1efdd62d1"
         };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         onAuthStateChanged(auth, user => {
-            if(!user) return window.location.href="login.html";
+            if(!user) window.location.href="login.html";
             onSnapshot(doc(db, "users", user.uid), d => {
-                const data = d.data();
-                if(data) {
-                    document.getElementById('balance').innerText = `P${(data.balance || 0).toFixed(2)}`;
-                    document.getElementById('plan-name').innerText = data.activePlan || "No Active Plan";
-                }
+                if(d.exists()) document.getElementById('balance').innerText = `P${d.data().balance.toFixed(2)}`;
             });
             const q = query(collection(db, "users", user.uid, "transactions"), orderBy("time", "desc"));
             onSnapshot(q, s => {
-                const l = document.getElementById('history-rows'); l.innerHTML = "";
+                const h = document.getElementById('history'); h.innerHTML = "";
                 s.forEach(doc => {
                     const t = doc.data();
-                    l.innerHTML += `<tr class="border-b"><td class="p-6">${t.type}</td><td class="p-6 text-right font-black ${t.amount < 0 ? 'text-red-500' : 'text-green-600'}">P${Math.abs(t.amount).toFixed(2)}</td></tr>`;
+                    h.innerHTML += `<div class="flex justify-between border-b pb-2"><span class="text-sm font-bold">${t.type}</span><span class="font-black ${t.amount < 0 ? 'text-red-500':'text-green-600'}">P${Math.abs(t.amount)}</span></div>`;
                 });
             });
         });
-
         window.logout = () => signOut(auth).then(() => window.location.href="login.html");
     </script>
 </body>
