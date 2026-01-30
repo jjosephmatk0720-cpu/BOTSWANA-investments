@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fund Your Account | Jubilee Fortunes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #020617; font-family: sans-serif; color: white; }
+        .deposit-card { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(251, 191, 36, 0.2); backdrop-filter: blur(12px); border-radius: 3rem; }
+        .input-style { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.5rem; padding: 1.25rem; width: 100%; color: white; outline: none; transition: 0.3s; }
+        .input-style:focus { border-color: #fbbf24; background: rgba(255,255,255,0.1); }
+        .step-pill { background: #fbbf24; color: #020617; padding: 2px 12px; border-radius: 99px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-2xl mx-auto pt-10 pb-20">
+        <header class="text-center mb-12">
+            <h1 class="text-2xl font-black italic uppercase tracking-tighter mb-2">Jubilee<span class="text-amber-500">Capital</span></h1>
+            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em]">Secure Funding Gateway</p>
+        </header>
+
+        <div class="deposit-card p-8 md:p-12">
+            <div class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-10 flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-black text-amber-500 uppercase">Micro-Entry Enabled</p>
+                    <p class="text-lg font-black italic">Min. Deposit: P70.00</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-black text-slate-500 uppercase">Standard Tier</p>
+                    <p class="text-lg font-black italic text-slate-400">P700.00</p>
+                </div>
+            </div>
+
+            <form id="deposit-form" class="space-y-8">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[10px] font-black uppercase text-slate-400">Funding Amount (Pula)</label>
+                        <span class="step-pill">Step 01</span>
+                    </div>
+                    <input type="number" id="dep-amount" placeholder="Minimum P70" min="70" class="input-style text-2xl font-black italic" required>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[10px] font-black uppercase text-slate-400">Select Gateway</label>
+                        <span class="step-pill">Step 02</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="method" value="Orange Money" class="hidden peer" checked>
+                            <div class="peer-checked:border-amber-500 peer-checked:bg-amber-500/10 border border-white/10 p-5 rounded-2xl text-center transition">
+                                <p class="text-xs font-black uppercase">Orange Money</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="method" value="USDT TRC20" class="hidden peer">
+                            <div class="peer-checked:border-amber-500 peer-checked:bg-amber-500/10 border border-white/10 p-5 rounded-2xl text-center transition">
+                                <p class="text-xs font-black uppercase">USDT (TRC20)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 rounded-3xl p-8 border border-white/5">
+                    <p class="text-[10px] font-black uppercase text-amber-500 mb-4 tracking-widest">Send Funds To:</p>
+                    <div id="payment-details">
+                        <div class="space-y-2">
+                            <p class="text-sm font-bold text-slate-300">Orange Money Merchant:</p>
+                            <p class="text-2xl font-black italic text-white tracking-widest">74 582 931</p>
+                            <p class="text-[9px] text-slate-500 uppercase font-black">Ref: Use your registered Email</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[10px] font-black uppercase text-slate-400">Transaction ID / Reference</label>
+                        <span class="step-pill">Step 03</span>
+                    </div>
+                    <input type="text" id="dep-ref" placeholder="Enter Transaction Code" class="input-style font-bold uppercase tracking-widest" required>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-500 text-slate-900 py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-amber-400 transition transform active:scale-95 shadow-2xl shadow-amber-500/20">
+                    Submit Proof of Funding
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBmZC9gaj68vd-tWHqgf9H0pYZBvVHhnPE", authDomain: "remoteworkingacess.firebaseapp.com", projectId: "remoteworkingacess", storageBucket: "remoteworkingacess.firebasestorage.app", messagingSenderId: "953179052891", appId: "1:953179052891:web:8126924e32e9fb62f4987e" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Change payment details based on selection
+        const methodRadios = document.querySelectorAll('input[name="method"]');
+        const payBox = document.getElementById('payment-details');
+
+        methodRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if(e.target.value === 'Orange Money') {
+                    payBox.innerHTML = `<div class="space-y-2"><p class="text-sm font-bold text-slate-300">Merchant Number:</p><p class="text-2xl font-black italic text-white">74 582 931</p></div>`;
+                } else {
+                    payBox.innerHTML = `<div class="space-y-2"><p class="text-sm font-bold text-slate-300">TRC20 Wallet Address:</p><p class="text-xs break-all font-black text-amber-500 bg-black/40 p-3 rounded-lg border border-amber-500/20">TLYs8S7fGzV8m2vX9W7qKzP8hL2mN5rQ4x</p></div>`;
+                }
+            });
+        });
+
+        document.getElementById('deposit-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if(!user) return alert("Please Login");
+
+            const amount = parseFloat(document.getElementById('dep-amount').value);
+            const reference = document.getElementById('dep-ref').value;
+            const method = document.querySelector('input[name="method"]:checked').value;
+
+            if(amount < 70) return alert("Minimum deposit is P70");
+
+            try {
+                await addDoc(collection(db, "deposits"), {
+                    uid: user.uid,
+                    userEmail: user.email,
+                    amount: amount,
+                    method: method,
+                    reference: reference,
+                    status: "Pending",
+                    time: serverTimestamp()
+                });
+                alert("Proof submitted! Your balance will update once verified by Jubilee Admin.");
+                window.location.href = "profile.html";
+            } catch(error) {
+                alert("Submission failed. Try again.");
+            }
+        };
+    </script>
+</body>
+</html>

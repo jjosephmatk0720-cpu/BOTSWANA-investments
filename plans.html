@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Plans | Jubilee Fortunes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: white; overflow-x: hidden; }
+        .glass-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); transition: all 0.3s ease; }
+        .gold-grad { background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%); }
+        .jubilee-gold { color: #fbbf24; }
+    </style>
+</head>
+<body class="p-4 sm:p-8 md:p-12">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="flex justify-between items-center mb-10 md:mb-16">
+            <h1 class="text-lg md:text-xl font-black uppercase tracking-tighter italic">Jubilee<span class="jubilee-gold">Fortunes</span></h1>
+            <a href="profile.html" class="text-[8px] md:text-[10px] font-black uppercase border border-white/10 px-4 md:px-8 py-2 md:py-3 rounded-full hover:bg-white/5 transition">Dashboard</a>
+        </header>
+
+        <div class="text-center mb-12 md:mb-20">
+            <p class="text-[8px] md:text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] mb-4">Strategic Wealth 2026</p>
+            <h2 class="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter italic leading-tight">Your Future <span class="jubilee-gold">Locked In.</span></h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            
+            <div class="glass-card p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border-amber-500/10">
+                <div class="flex justify-between items-start mb-6">
+                    <p class="text-[9px] font-black text-slate-500 uppercase">Starter</p>
+                    <span class="bg-amber-500 text-slate-900 text-[7px] font-black px-2 py-1 rounded-full uppercase">3-Day Payout</span>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-black mb-4 italic text-amber-500">Micro Entry</h3>
+                <div class="mb-6 md:mb-8">
+                    <span class="text-4xl md:text-5xl font-black">P70</span>
+                </div>
+                <ul class="space-y-3 mb-8 md:mb-10 text-xs md:text-sm font-medium text-slate-300">
+                    <li>✅ 4.0% Daily Returns</li>
+                    <li class="font-black text-amber-400">✅ 3 Day Withdrawal</li>
+                </ul>
+                <button onclick="invest(70, 'Micro Entry')" class="w-full bg-white text-slate-900 py-4 md:py-5 rounded-xl md:rounded-2xl font-black uppercase text-[10px] hover:bg-amber-500 transition">Activate</button>
+            </div>
+
+            <div class="glass-card p-6 md:p-10 rounded-[2rem] md:rounded-[3rem]">
+                <div class="flex justify-between items-start mb-6">
+                    <p class="text-[9px] font-black text-slate-500 uppercase">Tier 01</p>
+                    <span class="bg-amber-500 text-slate-900 text-[7px] font-black px-2 py-1 rounded-full uppercase">3-Day Payout</span>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-black mb-4 italic">Smart Start</h3>
+                <div class="mb-6 md:mb-8">
+                    <span class="text-4xl md:text-5xl font-black">P700</span>
+                </div>
+                <ul class="space-y-3 mb-8 md:mb-10 text-xs md:text-sm font-medium text-slate-300">
+                    <li>✅ 4.5% Daily Returns</li>
+                    <li class="font-black text-amber-400">✅ 3 Day Withdrawal</li>
+                </ul>
+                <button onclick="invest(700, 'Smart Start')" class="w-full bg-white/10 border border-white/20 py-4 md:py-5 rounded-xl md:rounded-2xl font-black uppercase text-[10px] hover:bg-white hover:text-slate-900 transition">Activate</button>
+            </div>
+
+            <div class="glass-card p-6 md:p-10 rounded-[2rem] md:rounded-[3rem]">
+                <p class="text-[9px] font-black text-slate-500 uppercase mb-2">Tier 02</p>
+                <h3 class="text-2xl md:text-3xl font-black mb-4 italic">Growth Tier</h3>
+                <div class="mb-6 md:mb-8">
+                    <span class="text-4xl md:text-5xl font-black">P1,000</span>
+                </div>
+                <ul class="space-y-3 mb-8 md:mb-10 text-xs md:text-sm font-medium text-slate-300">
+                    <li>✅ 5.0% Daily Returns</li>
+                    <li class="text-slate-500 italic">7 Day Standard Term</li>
+                </ul>
+                <button onclick="invest(1000, 'Growth Tier')" class="w-full bg-white/10 border border-white/20 py-4 md:py-5 rounded-xl md:rounded-2xl font-black uppercase text-[10px] hover:bg-white hover:text-slate-900 transition">Activate</button>
+            </div>
+
+            </div>
+    </div>
+
+    <script type="module">
+        // Firebase Logic stays the same as previous version
+    </script>
+</body>
+</html>

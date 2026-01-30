@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Access | Jubilee Fortunes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body { background: #020617; font-family: sans-serif; color: white; }
+        .auth-card { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .input-style { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; }
+        .strength-bar { height: 4px; border-radius: 2px; transition: all 0.3s ease; width: 0%; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="auth-card w-full max-w-md p-10 rounded-[3rem] shadow-2xl">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-black uppercase mb-2">Jubilee<span class="text-amber-400">Fortunes</span></h1>
+            <p id="auth-title" class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Smart Investor Portal</p>
+        </div>
+
+        <div id="auth-ui" class="space-y-4">
+            <input type="email" id="email" placeholder="Email" class="input-style w-full p-4 rounded-2xl font-bold text-sm">
+            
+            <div class="relative">
+                <input type="password" id="password" placeholder="Password (Example: Strong3#)" class="input-style w-full p-4 rounded-2xl font-bold text-sm pr-12">
+                <button onclick="togglePass('password', 'e1')" class="absolute right-4 top-4 text-slate-500"><i id="e1" data-feather="eye" class="w-4 h-4"></i></button>
+                <div class="mt-2 h-1 w-full bg-white/10 rounded overflow-hidden"><div id="strength-bar" class="strength-bar"></div></div>
+                <p id="len-err" class="text-[8px] text-red-500 font-black mt-1 hidden">10 CHARACTERS NOT ACHIEVED</p>
+            </div>
+
+            <div id="confirm-box" class="hidden relative">
+                <input type="password" id="confirm-password" placeholder="Confirm Password" class="input-style w-full p-4 rounded-2xl font-bold text-sm pr-12">
+                <button onclick="togglePass('confirm-password', 'e2')" class="absolute right-4 top-4 text-slate-500"><i id="e2" data-feather="eye" class="w-4 h-4"></i></button>
+                <p id="match-err" class="text-[8px] text-red-500 font-black mt-1 hidden">PASSWORDS DO NOT MATCH</p>
+            </div>
+
+            <button onclick="handleAuth()" id="main-btn" class="w-full bg-amber-400 text-slate-900 py-4 rounded-2xl font-black uppercase text-xs">Enter Dashboard</button>
+            <p id="toggle-text" class="text-slate-500 text-[10px] font-bold text-center mt-6 uppercase">New Investor? <button onclick="toggleMode()" class="text-amber-400">Create Account</button></p>
+        </div>
+
+        <div id="verify-ui" class="hidden text-center py-10">
+            <h2 class="text-xl font-black mb-4">Check Your Email</h2>
+            <p class="text-slate-400 text-sm mb-6">Verification link sent. Check your inbox.</p>
+            <button onclick="location.reload()" class="w-full border border-white/10 py-4 rounded-2xl uppercase font-black text-[10px]">Back to Login</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBmZC9gaj68vd-tWHqgf9H0pYZBvVHhnPE", authDomain: "remoteworkingacess.firebaseapp.com", projectId: "remoteworkingacess", storageBucket: "remoteworkingacess.firebasestorage.app", messagingSenderId: "953179052891", appId: "1:953179052891:web:8126924e32e9fb62f4987e" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        feather.replace();
+
+        let isSignup = false;
+        const pass = document.getElementById('password');
+        const conf = document.getElementById('confirm-password');
+
+        const validate = () => {
+            if(!isSignup) return;
+            const p1 = pass.value;
+            const p2 = conf.value;
+            document.getElementById('len-err').classList.toggle('hidden', p1.length >= 10 || p1.length === 0);
+            document.getElementById('match-err').classList.toggle('hidden', p1 === p2 || p2.length === 0);
+            
+            // Strength Meter
+            let s = 0; if(p1.length >= 10) s++; if(/[A-Z]/.test(p1)) s++; if(/[0-9]/.test(p1)) s++; if(/[^A-Za-z0-9]/.test(p1)) s++;
+            const bar = document.getElementById('strength-bar');
+            bar.style.width = (s * 25) + "%";
+            bar.style.backgroundColor = s < 2 ? "#ef4444" : s < 4 ? "#fbbf24" : "#22c55e";
+            document.getElementById('main-btn').disabled = (p1.length < 10 || p1 !== p2);
+        };
+
+        pass.oninput = validate; conf.oninput = validate;
+        window.togglePass = (id, eid) => {
+            const i = document.getElementById(id); i.type = i.type === 'password' ? 'text' : 'password';
+            document.getElementById(eid).setAttribute('data-feather', i.type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        };
+
+        window.toggleMode = () => {
+            isSignup = !isSignup;
+            document.getElementById('confirm-box').classList.toggle('hidden');
+            document.getElementById('auth-title').innerText = isSignup ? 'Register Smart Profile' : 'Smart Investor Portal';
+            document.getElementById('main-btn').innerText = isSignup ? 'Create Account' : 'Enter Dashboard';
+            feather.replace();
+        };
+
+        window.handleAuth = async () => {
+            const e = document.getElementById('email').value;
+            const p = pass.value;
+            try {
+                if(isSignup) {
+                    const res = await createUserWithEmailAndPassword(auth, e, p);
+                    await sendEmailVerification(res.user);
+                    await setDoc(doc(db, "users", res.user.uid), { email: e, balance: 0, joinedAt: new Date() });
+                    document.getElementById('auth-ui').classList.add('hidden');
+                    document.getElementById('verify-ui').classList.remove('hidden');
+                } else {
+                    const res = await signInWithEmailAndPassword(auth, e, p);
+                    if(!res.user.emailVerified) { alert("Verify email!"); await auth.signOut(); }
+                    else window.location.href = "profile.html";
+                }
+            } catch (err) { alert(err.message); }
+        };
+    </script>
+</body>
+</html>
