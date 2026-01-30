@@ -3,76 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jubilee Command | Admin 2025</title>
+    <title>Jubilee Admin | Control Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #f1f5f9; font-family: sans-serif; }
-        .admin-card { background: white; border-radius: 2.5rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        body { background: #020617; font-family: sans-serif; }
+        .admin-card { background: white; border-radius: 2rem; }
         .hidden { display: none !important; }
-        .locked-bg { background: #020617; }
-        .tab-btn { transition: all 0.3s ease; border-bottom: 3px solid transparent; }
         .tab-active { border-bottom: 3px solid #fbbf24; color: #fbbf24; font-weight: 900; }
-        .stat-glow { text-shadow: 0 0 15px rgba(251, 191, 36, 0.3); }
     </style>
 </head>
-<body class="locked-bg">
+<body class="bg-slate-900">
 
-    <div id="security-gate" class="fixed inset-0 z-[999] flex items-center justify-center p-6">
-        <div class="bg-slate-900 border border-white/10 p-12 rounded-[3.5rem] w-full max-w-md text-center shadow-2xl">
-            <h1 class="text-white font-black text-2xl mb-2 uppercase italic tracking-tighter">Jubilee<span class="text-amber-500">Command</span></h1>
-            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-10">Access Key Required</p>
-            <input type="password" id="admin-key-input" placeholder="••••••••" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white text-center font-bold mb-6 focus:border-amber-500 outline-none transition-all">
-            <button onclick="checkAdminKey()" class="w-full bg-amber-500 text-slate-900 py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-amber-400 transition transform active:scale-95">Unlock System</button>
+    <div id="security-gate" class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-950">
+        <div class="bg-slate-900 border border-white/10 p-8 md:p-12 rounded-[2.5rem] w-full max-w-md text-center shadow-2xl">
+            <h1 class="text-white font-black text-xl md:text-2xl mb-2 uppercase italic tracking-tighter">Jubilee<span class="text-amber-500">Command</span></h1>
+            <input type="password" id="admin-key-input" placeholder="ACCESS KEY" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-center font-bold mb-6 focus:border-amber-500 outline-none">
+            <button onclick="checkAdminKey()" class="w-full bg-amber-500 text-slate-900 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-amber-400 transition">Unlock System</button>
         </div>
     </div>
 
-    <div id="admin-panel" class="hidden min-h-screen">
-        <nav class="bg-white border-b p-6 mb-8 sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto flex justify-between items-center">
-                <h2 class="font-black text-lg uppercase italic text-slate-900 tracking-tighter">Jubilee Admin <span class="text-amber-500">2025</span></h2>
-                <button onclick="location.reload()" class="text-[9px] font-black uppercase bg-slate-900 text-white px-8 py-3 rounded-full hover:bg-amber-500 hover:text-slate-900 transition">Logout</button>
-            </div>
+    <div id="admin-panel" class="hidden min-h-screen bg-slate-50">
+        <nav class="bg-white border-b p-4 md:p-6 mb-6 flex justify-between items-center sticky top-0 z-50">
+            <h2 class="font-black text-sm md:text-lg uppercase italic text-slate-900">Jubilee Admin <span class="text-amber-500">2026</span></h2>
+            <button onclick="location.reload()" class="text-[8px] md:text-[9px] font-black uppercase bg-slate-900 text-white px-4 py-2 rounded-full">Logout</button>
         </nav>
 
-        <main class="max-w-7xl mx-auto px-6 pb-20">
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div class="admin-card p-8 flex flex-col justify-center">
-                    <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-1">Total Investor Capital</p>
-                    <h3 id="stat-capital" class="text-3xl font-black text-slate-900 stat-glow">P0.00</h3>
+        <main class="max-w-7xl mx-auto px-4 md:px-6 pb-20">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+                <div class="admin-card p-6 md:p-8 shadow-sm">
+                    <p class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 mb-1">Total Capital</p>
+                    <h3 id="stat-capital" class="text-2xl md:text-3xl font-black text-slate-900">P0.00</h3>
                 </div>
-                <div class="admin-card p-8 flex flex-col justify-center border-l-4 border-amber-500">
-                    <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-1">Total Payouts Made</p>
-                    <h3 id="stat-payouts" class="text-3xl font-black text-slate-900">P0.00</h3>
+                <div class="admin-card p-6 md:p-8 shadow-sm border-l-4 border-amber-500">
+                    <p class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 mb-1">Total Payouts</p>
+                    <h3 id="stat-payouts" class="text-2xl md:text-3xl font-black text-slate-900 text-red-600">P0.00</h3>
                 </div>
-                <div class="admin-card p-8 flex flex-col justify-center">
-                    <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-1">Active Accounts</p>
-                    <h3 id="stat-users" class="text-3xl font-black text-slate-900">0</h3>
+                <div class="admin-card p-6 md:p-8 shadow-sm">
+                    <p class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 mb-1">Investors</p>
+                    <h3 id="stat-users" class="text-2xl md:text-3xl font-black text-slate-900">0</h3>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <div class="lg:col-span-8 space-y-6">
-                    <div class="flex gap-10 mb-2 px-4">
-                        <button onclick="switchTab('dep')" id="tab-dep" class="tab-btn tab-active text-[11px] uppercase tracking-widest pb-3">Deposits</button>
-                        <button onclick="switchTab('with')" id="tab-with" class="tab-btn text-slate-400 text-[11px] uppercase tracking-widest pb-3">Withdrawals</button>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-8">
+                    <div class="flex gap-6 mb-6">
+                        <button onclick="switchTab('dep')" id="tab-dep" class="tab-active text-[10px] uppercase tracking-widest pb-2">Deposits</button>
+                        <button onclick="switchTab('with')" id="tab-with" class="text-slate-400 text-[10px] uppercase tracking-widest pb-2">Withdrawals</button>
                     </div>
-
-                    <div id="view-dep" class="admin-card p-10">
-                        <h3 class="text-[10px] font-black uppercase text-slate-400 mb-8 tracking-widest">Incoming Funding Proofs</h3>
+                    <div id="view-dep" class="admin-card p-6 bg-white shadow-sm min-h-[300px]">
                         <div id="deposit-list" class="space-y-4"></div>
                     </div>
-
-                    <div id="view-with" class="admin-card p-10 hidden">
-                        <h3 class="text-[10px] font-black uppercase text-slate-400 mb-8 tracking-widest">Payout Requests</h3>
+                    <div id="view-with" class="admin-card p-6 bg-white shadow-sm min-h-[300px] hidden">
                         <div id="withdrawal-list" class="space-y-4"></div>
                     </div>
                 </div>
-
                 <div class="lg:col-span-4">
-                    <div class="admin-card p-10">
-                        <h3 class="text-[10px] font-black uppercase text-slate-400 mb-8 tracking-widest">Investor Database</h3>
-                        <div id="user-list" class="space-y-4"></div>
+                    <div class="admin-card p-6 bg-white shadow-sm">
+                        <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Active Database</h3>
+                        <div id="user-list" class="space-y-2"></div>
                     </div>
                 </div>
             </div>
@@ -83,87 +71,68 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, addDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBmZC9gaj68vd-tWHqgf9H0pYZBvVHhnPE", authDomain: "remoteworkingacess.firebaseapp.com", projectId: "remoteworkingacess", storageBucket: "remoteworkingacess.firebasestorage.app", messagingSenderId: "953179052891", appId: "1:953179052891:web:8126924e32e9fb62f4987e" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBmZC9gaj68vd-tWHqgf9H0pYZBvVHhnPE", 
+            authDomain: "remoteworkingacess.firebaseapp.com", 
+            projectId: "remoteworkingacess", 
+            storageBucket: "remoteworkingacess.firebasestorage.app", 
+            messagingSenderId: "953179052891", 
+            appId: "1:953179052891:web:2ed40335272e7131f4987e" 
+        };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- 1. KEY GATE ---
         window.checkAdminKey = () => {
             if (document.getElementById('admin-key-input').value === "SRC3838") {
                 document.getElementById('security-gate').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
-                document.body.classList.remove('locked-bg');
                 initAdmin();
-            } else { alert("INVALID KEY."); }
+            } else { alert("ACCESS DENIED"); }
         };
 
-        // --- 2. TABS ---
         window.switchTab = (t) => {
             const isD = t === 'dep';
             document.getElementById('view-dep').classList.toggle('hidden', !isD);
             document.getElementById('view-with').classList.toggle('hidden', isD);
-            document.getElementById('tab-dep').className = isD ? "tab-btn tab-active text-[11px] uppercase tracking-widest pb-3" : "tab-btn text-slate-400 text-[11px] uppercase tracking-widest pb-3";
-            document.getElementById('tab-with').className = !isD ? "tab-btn tab-active text-[11px] uppercase tracking-widest pb-3" : "tab-btn text-slate-400 text-[11px] uppercase tracking-widest pb-3";
+            document.getElementById('tab-dep').className = isD ? "tab-active uppercase tracking-widest pb-2" : "text-slate-400 uppercase tracking-widest pb-2";
+            document.getElementById('tab-with').className = !isD ? "tab-active uppercase tracking-widest pb-2" : "text-slate-400 uppercase tracking-widest pb-2";
         };
 
-        // --- 3. LIVE STATS & DATA ---
         function initAdmin() {
-            // Stats & User List
             onSnapshot(collection(db, "users"), s => {
-                let totalCap = 0;
-                let userCount = 0;
-                const l = document.getElementById('user-list');
-                l.innerHTML = "";
+                let cap = 0; let count = 0; const l = document.getElementById('user-list'); l.innerHTML = "";
                 s.forEach(d => {
-                    const u = d.data();
-                    totalCap += (u.balance || 0);
-                    userCount++;
-                    l.innerHTML += `<div class="p-4 bg-slate-50 border rounded-2xl flex justify-between items-center"><span class="text-[9px] font-black text-slate-700">${u.email}</span><span class="text-xs font-black text-amber-600">P${(u.balance || 0).toFixed(2)}</span></div>`;
+                    const u = d.data(); cap += (u.balance || 0); count++;
+                    l.innerHTML += `<div class="p-3 bg-slate-50 border rounded-xl flex justify-between items-center text-[9px] font-bold"><span>${u.email}</span><span class="text-amber-600">P${(u.balance || 0).toFixed(2)}</span></div>`;
                 });
-                document.getElementById('stat-capital').innerText = `P${totalCap.toLocaleString()}`;
-                document.getElementById('stat-users').innerText = userCount;
+                document.getElementById('stat-capital').innerText = `P${cap.toLocaleString()}`;
+                document.getElementById('stat-users').innerText = count;
             });
 
-            // Payout Stats
             onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "Paid")), s => {
-                let totalPaid = 0;
-                s.forEach(d => totalPaid += d.data().amount);
-                document.getElementById('stat-payouts').innerText = `P${totalPaid.toLocaleString()}`;
+                let paid = 0; s.forEach(d => paid += d.data().amount);
+                document.getElementById('stat-payouts').innerText = `P${paid.toLocaleString()}`;
             });
 
-            // Pending Deposits
             onSnapshot(query(collection(db, "deposits"), where("status", "==", "Pending")), s => {
-                const l = document.getElementById('deposit-list');
-                l.innerHTML = s.empty ? '<p class="text-slate-400 italic text-center py-10">No pending deposits.</p>' : "";
+                const l = document.getElementById('deposit-list'); l.innerHTML = s.empty ? '<p class="text-slate-400 text-center py-10 italic">Clear</p>' : "";
                 s.forEach(d => {
                     const r = d.data();
-                    l.innerHTML += `<div class="p-6 border rounded-[2rem] bg-white flex justify-between items-center"><div><p class="text-[9px] font-black text-slate-400 uppercase">${r.userEmail || r.email}</p><p class="text-xl font-black text-slate-900">P${r.amount.toFixed(2)}</p><p class="text-[8px] font-bold text-blue-600">Ref: ${r.reference}</p></div><button onclick="approveDep('${d.id}', '${r.uid}', ${r.amount})" class="bg-green-500 text-white px-6 py-2 rounded-xl font-black text-[9px] uppercase">Approve</button></div>`;
+                    l.innerHTML += `<div class="p-6 border rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 bg-white"><div><p class="text-[9px] font-black text-slate-400 uppercase">${r.userEmail}</p><p class="text-xl font-black italic">P${r.amount}</p></div><button onclick="approveDep('${d.id}','${r.uid}',${r.amount})" class="w-full md:w-auto bg-green-600 text-white px-8 py-2 rounded-xl font-black text-[10px]">VERIFY</button></div>`;
                 });
             });
 
-            // Pending Withdrawals
             onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "Pending")), s => {
-                const l = document.getElementById('withdrawal-list');
-                l.innerHTML = s.empty ? '<p class="text-slate-400 italic text-center py-10">No pending payouts.</p>' : "";
+                const l = document.getElementById('withdrawal-list'); l.innerHTML = s.empty ? '<p class="text-slate-400 text-center py-10 italic">No Payouts</p>' : "";
                 s.forEach(d => {
                     const r = d.data();
-                    l.innerHTML += `<div class="p-6 border rounded-[2rem] bg-white flex justify-between items-center border-amber-100"><div><p class="text-[9px] font-black text-slate-400 uppercase">${r.email}</p><p class="text-xl font-black text-red-500">P${r.amount.toFixed(2)}</p><p class="text-[8px] font-bold text-slate-900 uppercase">${r.method}: ${r.detail}</p></div><button onclick="approveWith('${d.id}', '${r.uid}', ${r.amount})" class="bg-slate-900 text-white px-6 py-2 rounded-xl font-black text-[9px] uppercase">Paid</button></div>`;
+                    l.innerHTML += `<div class="p-6 border border-amber-100 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 bg-white"><div><p class="text-[9px] font-black text-slate-400 uppercase">${r.email}</p><p class="text-xl font-black text-red-500 italic">P${r.amount}</p><p class="text-[9px] font-bold uppercase">${r.method}</p></div><button onclick="approveWith('${d.id}','${r.uid}',${r.amount})" class="w-full md:w-auto bg-slate-900 text-white px-8 py-2 rounded-xl font-black text-[10px]">PAID</button></div>`;
                 });
             });
         }
 
-        window.approveDep = async (id, uid, amt) => {
-            if(!confirm(`Verify P${amt}?`)) return;
-            await updateDoc(doc(db, "users", uid), { balance: increment(amt) });
-            await updateDoc(doc(db, "deposits", id), { status: "Verified" });
-            await addDoc(collection(db, "users", uid, "transactions"), { type: "Deposit Approved", amount: amt, status: "Verified", time: serverTimestamp() });
-        };
-
-        window.approveWith = async (id, uid, amt) => {
-            if(!confirm(`Mark P${amt} as Paid?`)) return;
-            await updateDoc(doc(db, "withdrawals", id), { status: "Paid" });
-            await addDoc(collection(db, "users", uid, "transactions"), { type: "Withdrawal Sent", amount: -amt, status: "Paid", time: serverTimestamp() });
-        };
+        window.approveDep = async (id, uid, amt) => { if(confirm(`Confirm P${amt}?`)) { await updateDoc(doc(db,"users",uid), {balance: increment(amt)}); await updateDoc(doc(db,"deposits",id), {status:"Verified"}); await addDoc(collection(db,"users",uid,"transactions"), {type:"Deposit", amount:amt, status:"Success", time:serverTimestamp()}); }};
+        window.approveWith = async (id, uid, amt) => { if(confirm(`Confirm P${amt} Paid?`)) { await updateDoc(doc(db,"withdrawals",id), {status:"Paid"}); await addDoc(collection(db,"users",uid,"transactions"), {type:"Withdrawal", amount:-amt, status:"Paid", time:serverTimestamp()}); }};
     </script>
 </body>
 </html>
