@@ -8,7 +8,7 @@
     <style>
         body { background: #020617; font-family: sans-serif; }
         .auth-card { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(251, 191, 36, 0.1); }
-        .input-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; transition: 0.3s; }
+        .input-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; transition: 0.3s; width: 100%; padding: 1rem; border-radius: 1rem; font-size: 0.875rem; margin-top: 1rem;}
         .input-field:focus { border-color: #fbbf24; background: rgba(255,255,255,0.1); outline: none; }
         .hidden { display: none; }
     </style>
@@ -21,29 +21,33 @@
             <p id="auth-title" class="text-slate-500 text-[9px] font-black uppercase tracking-widest mt-2">Investor Login</p>
         </div>
 
-        <form id="auth-form" class="space-y-4">
-            <input type="email" id="email" placeholder="Email Address" class="w-full input-field p-4 rounded-2xl text-sm" required>
-            <input type="password" id="pass" placeholder="Password" class="w-full input-field p-4 rounded-2xl text-sm" required>
+        <form id="auth-form">
+            <input type="email" id="email" placeholder="Email Address" class="input-field" required>
+            <input type="password" id="pass" placeholder="Password" class="input-field" required>
             
             <div id="confirm-box" class="hidden">
-                <input type="password" id="confirm-pass" placeholder="Confirm Password" class="w-full input-field p-4 rounded-2xl text-sm mt-4">
+                <input type="password" id="confirm-pass" placeholder="Confirm Password" class="input-field">
+                <p class="text-[8px] text-amber-500/70 mt-2 ml-2 uppercase font-bold italic">Minimum 10 characters required</p>
             </div>
             
-            <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-900 py-4 rounded-2xl font-black uppercase text-xs tracking-widest mt-4 hover:bg-amber-400 transition transform active:scale-95">
+            <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-900 py-4 rounded-2xl font-black uppercase text-xs tracking-widest mt-6 hover:bg-amber-400 transition transform active:scale-95">
                 Login
             </button>
         </form>
 
-        <div class="mt-8 text-center">
+        <div class="mt-6 text-center space-y-3">
             <p id="toggle-text" class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                 New Investor? <span onclick="toggleAuth()" class="text-amber-500 cursor-pointer hover:underline">Sign Up</span>
+            </p>
+            <p onclick="forgotPassword()" class="text-slate-400 text-[9px] font-bold uppercase tracking-widest cursor-pointer hover:text-white transition">
+                Forgot Password?
             </p>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -71,42 +75,47 @@
                 `Already Registered? <span onclick="toggleAuth()" class="text-amber-500 cursor-pointer hover:underline">Login</span>`;
         };
 
+        window.forgotPassword = async () => {
+            const email = document.getElementById('email').value;
+            if(!email) return alert("Please enter your email address first.");
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert("Reset link sent! Check your inbox.");
+            } catch (err) { alert(err.message); }
+        };
+
         document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const pass = document.getElementById('pass').value;
-            const confirmPass = document.getElementById('confirm-pass').value;
 
-            try {
-                if (isLogin) {
+            if (isLogin) {
+                try {
                     await signInWithEmailAndPassword(auth, email, pass);
                     window.location.href = "profile.html";
-                } else {
-                    // SIGN UP VALIDATION
-                    if (pass !== confirmPass) {
-                        alert("Passwords do not match!");
-                        return;
-                    }
-
-                    const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    
-                    // SEND VERIFICATION EMAIL
-                    await sendEmailVerification(res.user);
-                    
-                    // INITIALIZE DATA
-                    await setDoc(doc(db, "users", res.user.uid), {
-                        email: email,
-                        balance: 0,
-                        activePlan: "None",
-                        uid: res.user.uid,
-                        joined: new Date()
-                    });
-
-                    alert("SECURITY ALERT: A verification link has been sent to " + email + ". Please verify your account before logging in.");
-                    toggleAuth(); // Switch back to login mode
+                } catch (err) { alert("Login Error: " + err.message); }
+            } else {
+                const confirmPass = document.getElementById('confirm-pass').value;
+                
+                // SECURITY CHECK: 10 CHARACTERS
+                if (pass.length < 10) {
+                    alert("Security Refused: Password must be at least 10 characters long.");
+                    return;
                 }
-            } catch (err) {
-                alert("Error: " + err.message);
+                if (pass !== confirmPass) {
+                    alert("Passwords do not match!");
+                    return;
+                }
+
+                try {
+                    const res = await createUserWithEmailAndPassword(auth, email, pass);
+                    await sendEmailVerification(res.user);
+                    await setDoc(doc(db, "users", res.user.uid), {
+                        email: email, balance: 0, activePlan: "None", uid: res.user.uid, joined: new Date()
+                    });
+                    alert("VERIFICATION SENT: Check your email to activate your account.");
+                    toggleAuth();
+                } catch (err) { alert(err.message); }
             }
         };
     </script>
