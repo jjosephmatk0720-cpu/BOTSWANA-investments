@@ -3,29 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Jubilee Fortunes</title>
+    <title>Secure Access | Jubilee Fortunes</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #020617; font-family: sans-serif; }
+        .auth-card { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(251, 191, 36, 0.1); }
+        .input-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; transition: 0.3s; }
+        .input-field:focus { border-color: #fbbf24; background: rgba(255,255,255,0.1); outline: none; }
+        .hidden { display: none; }
+    </style>
 </head>
-<body class="bg-slate-950 flex items-center justify-center min-h-screen p-6">
+<body class="flex items-center justify-center min-h-screen p-6">
 
-    <div class="w-full max-w-sm bg-slate-900 border border-white/10 p-10 rounded-[2.5rem] shadow-2xl">
+    <div class="w-full max-w-sm auth-card p-10 rounded-[3rem] shadow-2xl">
         <div class="text-center mb-10">
             <h1 class="text-white font-black italic uppercase tracking-tighter text-2xl">Jubilee<span class="text-amber-500">Access</span></h1>
-            <p class="text-slate-500 text-[9px] font-black uppercase tracking-widest mt-2">Secure Authentication</p>
+            <p id="auth-title" class="text-slate-500 text-[9px] font-black uppercase tracking-widest mt-2">Investor Login</p>
         </div>
 
-        <form id="login-form" class="space-y-4">
-            <input type="email" id="email" placeholder="Email Address" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-amber-500 transition" required>
-            <input type="password" id="pass" placeholder="Password" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-amber-500 transition" required>
+        <form id="auth-form" class="space-y-4">
+            <input type="email" id="email" placeholder="Email Address" class="w-full input-field p-4 rounded-2xl text-sm" required>
+            <input type="password" id="pass" placeholder="Password" class="w-full input-field p-4 rounded-2xl text-sm" required>
             
-            <button type="submit" class="w-full bg-amber-500 text-slate-900 py-4 rounded-2xl font-black uppercase text-xs tracking-widest mt-4 hover:bg-amber-400 transition">Login / Register</button>
+            <div id="confirm-box" class="hidden">
+                <input type="password" id="confirm-pass" placeholder="Confirm Password" class="w-full input-field p-4 rounded-2xl text-sm mt-4">
+            </div>
+            
+            <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-900 py-4 rounded-2xl font-black uppercase text-xs tracking-widest mt-4 hover:bg-amber-400 transition transform active:scale-95">
+                Login
+            </button>
         </form>
+
+        <div class="mt-8 text-center">
+            <p id="toggle-text" class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">
+                New Investor? <span onclick="toggleAuth()" class="text-amber-500 cursor-pointer hover:underline">Sign Up</span>
+            </p>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDtvz0p0ID5HnB8DVdpWVJ4mCqYM_7M8n0",
@@ -40,36 +59,54 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        document.getElementById('login-form').onsubmit = async (e) => {
+        let isLogin = true;
+
+        window.toggleAuth = () => {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "Investor Login" : "Create Account";
+            document.getElementById('submit-btn').innerText = isLogin ? "Login" : "Sign Up Now";
+            document.getElementById('confirm-box').classList.toggle('hidden', isLogin);
+            document.getElementById('toggle-text').innerHTML = isLogin ? 
+                `New Investor? <span onclick="toggleAuth()" class="text-amber-500 cursor-pointer hover:underline">Sign Up</span>` : 
+                `Already Registered? <span onclick="toggleAuth()" class="text-amber-500 cursor-pointer hover:underline">Login</span>`;
+        };
+
+        document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const pass = document.getElementById('pass').value;
+            const confirmPass = document.getElementById('confirm-pass').value;
 
             try {
-                // Try to login
-                const userCred = await signInWithEmailAndPassword(auth, email, pass);
-                window.location.href = "profile.html";
-            } catch (err) {
-                // If user doesn't exist, create account
-                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-                    try {
-                        const newCred = await createUserWithEmailAndPassword(auth, email, pass);
-                        const user = newCred.user;
-                        // Initialize User Balance in Firestore
-                        await setDoc(doc(db, "users", user.uid), {
-                            email: email,
-                            balance: 0,
-                            activePlan: "None",
-                            joined: new Date()
-                        });
-                        alert("Account Created Successfully!");
-                        window.location.href = "profile.html";
-                    } catch (createErr) {
-                        alert("Error creating account: " + createErr.message);
-                    }
+                if (isLogin) {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                    window.location.href = "profile.html";
                 } else {
-                    alert("Login Error: " + err.message);
+                    // SIGN UP VALIDATION
+                    if (pass !== confirmPass) {
+                        alert("Passwords do not match!");
+                        return;
+                    }
+
+                    const res = await createUserWithEmailAndPassword(auth, email, pass);
+                    
+                    // SEND VERIFICATION EMAIL
+                    await sendEmailVerification(res.user);
+                    
+                    // INITIALIZE DATA
+                    await setDoc(doc(db, "users", res.user.uid), {
+                        email: email,
+                        balance: 0,
+                        activePlan: "None",
+                        uid: res.user.uid,
+                        joined: new Date()
+                    });
+
+                    alert("SECURITY ALERT: A verification link has been sent to " + email + ". Please verify your account before logging in.");
+                    toggleAuth(); // Switch back to login mode
                 }
+            } catch (err) {
+                alert("Error: " + err.message);
             }
         };
     </script>
