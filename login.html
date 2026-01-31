@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Access | Jubilee Fortunes</title>
+    <title>Secure Access | Jubilee Fortunes 2025</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: #020617; font-family: sans-serif; }
         .auth-card { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(251, 191, 36, 0.1); }
-        .input-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; transition: 0.3s; width: 100%; padding: 1rem; border-radius: 1rem; font-size: 0.875rem; margin-top: 1rem;}
+        .input-group { position: relative; width: 100%; margin-top: 1rem; }
+        .input-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; transition: 0.3s; width: 100%; padding: 1rem; padding-right: 3rem; border-radius: 1rem; font-size: 0.875rem; }
         .input-field:focus { border-color: #fbbf24; background: rgba(255,255,255,0.1); outline: none; }
-        .hidden { display: none; }
+        .eye-btn { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #64748b; font-size: 1.2rem; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
@@ -18,15 +20,22 @@
     <div class="w-full max-w-sm auth-card p-10 rounded-[3rem] shadow-2xl">
         <div class="text-center mb-10">
             <h1 class="text-white font-black italic uppercase tracking-tighter text-2xl">Jubilee<span class="text-amber-500">Access</span></h1>
-            <p id="auth-title" class="text-slate-500 text-[9px] font-black uppercase tracking-widest mt-2">Investor Login</p>
+            <p id="auth-title" class="text-slate-500 text-[9px] font-black uppercase tracking-widest mt-2">Investor Login 2025</p>
         </div>
 
         <form id="auth-form">
             <input type="email" id="email" placeholder="Email Address" class="input-field" required>
-            <input type="password" id="pass" placeholder="Password" class="input-field" required>
+            
+            <div class="input-group">
+                <input type="password" id="pass" placeholder="Password" class="input-field" required>
+                <span onclick="toggleVisibility('pass')" class="eye-btn">👁️</span>
+            </div>
             
             <div id="confirm-box" class="hidden">
-                <input type="password" id="confirm-pass" placeholder="Confirm Password" class="input-field">
+                <div class="input-group">
+                    <input type="password" id="confirm-pass" placeholder="Confirm Password" class="input-field">
+                    <span onclick="toggleVisibility('confirm-pass')" class="eye-btn">👁️</span>
+                </div>
                 <p class="text-[8px] text-amber-500/70 mt-2 ml-2 uppercase font-bold italic">Minimum 10 characters required</p>
             </div>
             
@@ -65,9 +74,14 @@
 
         let isLogin = true;
 
+        window.toggleVisibility = (id) => {
+            const el = document.getElementById(id);
+            el.type = el.type === "password" ? "text" : "password";
+        };
+
         window.toggleAuth = () => {
             isLogin = !isLogin;
-            document.getElementById('auth-title').innerText = isLogin ? "Investor Login" : "Create Account";
+            document.getElementById('auth-title').innerText = isLogin ? "Investor Login 2025" : "Create Account 2025";
             document.getElementById('submit-btn').innerText = isLogin ? "Login" : "Sign Up Now";
             document.getElementById('confirm-box').classList.toggle('hidden', isLogin);
             document.getElementById('toggle-text').innerHTML = isLogin ? 
@@ -77,7 +91,7 @@
 
         window.forgotPassword = async () => {
             const email = document.getElementById('email').value;
-            if(!email) return alert("Please enter your email address first.");
+            if(!email) return alert("Please enter your email address.");
             try {
                 await sendPasswordResetEmail(auth, email);
                 alert("Reset link sent! Check your inbox.");
@@ -96,8 +110,6 @@
                 } catch (err) { alert("Login Error: " + err.message); }
             } else {
                 const confirmPass = document.getElementById('confirm-pass').value;
-                
-                // SECURITY CHECK: 10 CHARACTERS
                 if (pass.length < 10) {
                     alert("Security Refused: Password must be at least 10 characters long.");
                     return;
@@ -106,14 +118,13 @@
                     alert("Passwords do not match!");
                     return;
                 }
-
                 try {
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
                     await sendEmailVerification(res.user);
                     await setDoc(doc(db, "users", res.user.uid), {
                         email: email, balance: 0, activePlan: "None", uid: res.user.uid, joined: new Date()
                     });
-                    alert("VERIFICATION SENT: Check your email to activate your account.");
+                    alert("VERIFICATION SENT: Check your email to activate your account for 2025.");
                     toggleAuth();
                 } catch (err) { alert(err.message); }
             }
